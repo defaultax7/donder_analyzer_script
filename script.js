@@ -7,6 +7,7 @@
 
 // create a form for filtering
 let form = document.createElement('from');
+
 let starFilterLabel = document.createElement('label');
 starFilterLabel.innerText = 'Star : ';
 let starFilter = document.createElement('select');
@@ -28,8 +29,32 @@ for (let i = 0; i <= noOfStars; i++) {
 starFilter.addEventListener("change", function () {
 	filter();
 });
+
+let genreFilterLabel = document.createElement('label');
+genreFilterLabel.innerText = 'Genre : ';
+let genreFilter = document.createElement('select');
+genreFilter.setAttribute('id', "genreFilter");
+const genres = ['any', 'namco', 'jpop', 'game', 'classic', 'kids', 'vocaloid', 'anime', 'green'];
+const genresJPText = ['魑魅魍魎', 'ナ', 'ポ', 'ゲ', 'ク', 'キ', 'ボ', 'ア', 'バ'];
+for (let i = 0; i <= genres.length; i++) {
+	let option = document.createElement('option');
+	option.value = i;
+	option.text = genres[i];
+	genreFilter.appendChild(option);
+};
+
+// add listener to the select element
+genreFilter.addEventListener("change", function () {
+	filter();
+});
+
 form.appendChild(starFilterLabel);
+form.appendChild(document.createElement('br'));
 form.appendChild(starFilter);
+form.appendChild(document.createElement('br'));
+form.appendChild(genreFilterLabel);
+form.appendChild(document.createElement('br'));
+form.appendChild(genreFilter);
 
 let scoreTable = document.getElementsByTagName("table")[5];
 let startingIndex = getStartingIndex();
@@ -48,6 +73,7 @@ function filter() {
 	// TODO : find a better way to get the score table
 	let rows = scoreTable.getElementsByTagName("tr");
 	let selectedStart = getSelectedStar();
+	let selectedGenre = getSelectedGenre();
 
 	// the first 2 rows are header info
 	for (i = startingIndex; i < rows.length; i++) {
@@ -57,7 +83,7 @@ function filter() {
 		let difficulty = currentRow[1].innerText;
 		let star = parseInt(currentRow[2].innerText);
 		let lowestBpm = currentRow[3].innerText;
-		let songGenreAndPos = currentRow[4].innerText;
+		let genreAndPos = currentRow[4].innerText;
 		// an empty columns in index 5
 		let crown = currentRow[6].innerText;
 		let scoreRank = currentRow[7].innerText;
@@ -68,14 +94,25 @@ function filter() {
 		let combo = currentRow[12].innerText;
 		let linda = currentRow[13].innerText;
 		let rank = currentRow[14].innerText;
+
+		let shouldHide = false;
+
 		if (selectedStart != 0) {
-			if (star == selectedStart) {
-				rows[i].style.display = ""
-			} else {
-				rows[i].style.display = "none"
+			if (star != selectedStart) {
+				shouldHide = true;
 			}
+		}
+
+		if (selectedGenre != 0) {
+			if (convertGenreTextToGenreNumber(genreAndPos) != selectedGenre) {
+				shouldHide = true;
+			}
+		}
+
+		if (shouldHide) {
+			rows[i].style.display = "none";
 		} else {
-			rows[i].style.display = ""
+			rows[i].style.display = "";
 		}
 	}
 }
@@ -88,6 +125,16 @@ function getStartingIndex() {
 function getSelectedStar() {
 	let starFilter = document.getElementById("starFilter");
 	return starFilter.value;
+}
+
+function getSelectedGenre() {
+	let genreFilter = document.getElementById("genreFilter");
+	return genreFilter.value;
+}
+
+function convertGenreTextToGenreNumber(originalText) {
+	const text = originalText.charAt(0);
+	return genresJPText.indexOf(text);
 }
 
 function sort(index) {

@@ -19,7 +19,11 @@ createTheFilterForm();
 // add sorting ability to each header
 let headerRow = scoreTable.getElementsByTagName('tr')[startingIndex - 1].getElementsByTagName('td');
 for (let i = 0; i < headerRow.length; i++) {
-	headerRow[i].addEventListener('click', function () {
+	let currentColumn = headerRow[i];
+	currentColumn.style.cursor = 'pointer';
+	currentColumn.style.color = 'blue';
+	currentColumn.style.textDecoration = 'underline';
+	currentColumn.addEventListener('click', function () {
 		sort(i);
 	})
 }

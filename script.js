@@ -31,15 +31,19 @@ starFilter.addEventListener("change", function () {
 form.appendChild(starFilterLabel);
 form.appendChild(starFilter);
 
-document.getElementsByTagName("table")[5].prepend(form)
+let scoreTable = document.getElementsByTagName("table")[5];
+
+scoreTable.prepend(form)
 
 
 function filter() {
 	// TODO : find a better way to get the score table
-	let rows = document.getElementsByTagName("table")[5].getElementsByTagName("tr");
+	let rows = scoreTable.getElementsByTagName("tr");
 	let selectedStart = getSelectedStar();
+	let startingIndex = getStartingIndex();
+	console.log(startingIndex);
 	// the first 2 rows are header info
-	for (i = 2; i < rows.length; i++) {
+	for (i = startingIndex; i < rows.length; i++) {
 		// extract every columns for readbility
 		let currentRow = rows[i].getElementsByTagName('td');
 		let songName = currentRow[0].innerText;
@@ -67,6 +71,11 @@ function filter() {
 			rows[i].style.display = ""
 		}
 	}
+}
+
+function getStartingIndex() {
+	// if the first row has less than 14 columns, it is not a part of the score table
+	return scoreTable.getElementsByTagName("tr")[0].getElementsByTagName("td").length < 14 ? 2 : 1;
 }
 
 function getSelectedStar() {

@@ -24,6 +24,8 @@ for (let i = 0; i < headerRow.length; i++) {
 	})
 }
 
+filter();
+
 function getTheScoreTable() {
 	return document.getElementsByTagName("table")[5];
 }
@@ -101,6 +103,12 @@ function createTheFilterForm() {
 		filter();
 	});
 
+	let numberOfRecordsLabel = document.createElement('span');
+	numberOfRecordsLabel.innerText = 'Number of records selected : ';
+	let numberOfRecords = document.createElement('span');
+	numberOfRecords.innerText = '0';
+	numberOfRecords.setAttribute("id", "numberOfRecords");
+
 	form.appendChild(starFilterLabel);
 	form.appendChild(document.createElement('br'));
 	form.appendChild(starFilter);
@@ -116,8 +124,12 @@ function createTheFilterForm() {
 	form.appendChild(difficultyFilterLabel);
 	form.appendChild(document.createElement('br'));
 	form.appendChild(difficultyFilter);
+	form.appendChild(document.createElement('br'));
+	form.appendChild(numberOfRecordsLabel);
+	form.appendChild(numberOfRecords);
 
-	scoreTable.prepend(form)
+	let parentNode = document.getElementsByTagName("center")[0];
+	parentNode.insertBefore(form, scoreTable);
 }
 
 function filter() {
@@ -127,6 +139,8 @@ function filter() {
 	let selectedGenre = getSelectedGenre();
 	let selectedCrown = getSelectedCrown();
 	let selectedDifficulty = getSelectedDifficulty();
+
+	let count = 0;
 
 	// the first 2 rows are header info
 	for (i = startingIndex; i < rows.length; i++) {
@@ -177,9 +191,11 @@ function filter() {
 		if (shouldHide) {
 			rows[i].style.display = "none";
 		} else {
+			count++;
 			rows[i].style.display = "";
 		}
 	}
+	document.getElementById('numberOfRecords').innerText = count;
 }
 
 function getStartingIndex() {

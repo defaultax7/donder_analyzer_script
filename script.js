@@ -5,60 +5,17 @@
 // @include https://ibubara.mydns.jp/don-anal/don-anal.cgi?*
 // ==/UserScript==
 
-// create a form for filtering
-let form = document.createElement('from');
-
-let starFilterLabel = document.createElement('label');
-starFilterLabel.innerText = 'Star : ';
-let starFilter = document.createElement('select');
-starFilter.setAttribute("id", "starFilter");
 const noOfStars = 10;
-// include 0 as 'any'
-for (let i = 0; i <= noOfStars; i++) {
-	let option = document.createElement('option');
-	option.value = i;
-	if (i === 0) {
-		option.text = 'any';
-	}
-	else {
-		option.text = i;
-	}
-	starFilter.appendChild(option);
-};
-// add listener to the select element
-starFilter.addEventListener("change", function () {
-	filter();
-});
+const genres = new Map([['Any', 0], ['namco', 'ナ'], ['jpop', 'ポ'], ['game', 'ゲ'], ['classic', 'ク'], ['kids', 'キ'], ['vocaloid', 'ボ'], ['anime', 'ア'], ['green', 'バ']]);
+const crowns = new Map([['Any', 0], ['Rainbow', '虹'], ['Gold', '金'], ['Silver', '銀'], ['None', '無']]);
 
-let genreFilterLabel = document.createElement('label');
-genreFilterLabel.innerText = 'Genre : ';
-let genreFilter = document.createElement('select');
-genreFilter.setAttribute('id', "genreFilter");
-
-const genres = new Map([['any', 0], ['namco', 'ナ'], ['jpop', 'ポ'], ['game', 'ゲ'], ['classic', 'ク'], ['kids', 'キ'], ['vocaloid', 'ボ'], ['anime', 'ア'], ['green', 'バ']]);
-for (let [key, value] of genres) {
-	let option = document.createElement('option');
-	option.value = value;
-	option.text = key;
-	genreFilter.appendChild(option);
-}
-
-// add listener to the select element
-genreFilter.addEventListener("change", function () {
-	filter();
-});
-
-form.appendChild(starFilterLabel);
-form.appendChild(document.createElement('br'));
-form.appendChild(starFilter);
-form.appendChild(document.createElement('br'));
-form.appendChild(genreFilterLabel);
-form.appendChild(document.createElement('br'));
-form.appendChild(genreFilter);
-
-let scoreTable = document.getElementsByTagName("table")[5];
+let scoreTable = getTheScoreTable();
 let startingIndex = getStartingIndex();
 
+// create a form for filtering
+createTheFilterForm();
+
+// add sorting ability to each header
 let headerRow = scoreTable.getElementsByTagName('tr')[startingIndex - 1].getElementsByTagName('td');
 for (let i = 0; i < headerRow.length; i++) {
 	headerRow[i].addEventListener('click', function () {
@@ -66,13 +23,89 @@ for (let i = 0; i < headerRow.length; i++) {
 	})
 }
 
-scoreTable.prepend(form)
+function getTheScoreTable() {
+	return document.getElementsByTagName("table")[5];
+}
+
+function createTheFilterForm() {
+	let form = document.createElement('from');
+
+	let starFilterLabel = document.createElement('label');
+	starFilterLabel.innerText = 'Star : ';
+	let starFilter = document.createElement('select');
+	starFilter.setAttribute("id", "starFilter");
+
+	// include 0 as 'Any'
+	for (let i = 0; i <= noOfStars; i++) {
+		let option = document.createElement('option');
+		option.value = i;
+		if (i === 0) {
+			option.text = 'Any';
+		}
+		else {
+			option.text = i;
+		}
+		starFilter.appendChild(option);
+	};
+
+	starFilter.addEventListener("change", function () {
+		filter();
+	});
+
+	let genreFilterLabel = document.createElement('label');
+	genreFilterLabel.innerText = 'Genre : ';
+	let genreFilter = document.createElement('select');
+	genreFilter.setAttribute('id', "genreFilter");
+
+	for (let [key, value] of genres) {
+		let option = document.createElement('option');
+		option.value = value;
+		option.text = key;
+		genreFilter.appendChild(option);
+	}
+
+	genreFilter.addEventListener("change", function () {
+		filter();
+	});
+
+	let crownFilterLabel = document.createElement('label');
+	crownFilterLabel.innerText = 'Crown : ';
+	let crownFilter = document.createElement('select');
+	crownFilter.setAttribute("id", "crownFilter");
+
+	for (let [key, value] of crowns) {
+		let option = document.createElement('option');
+		option.value = value;
+		option.text = key;
+		crownFilter.appendChild(option);
+	}
+
+	crownFilter.addEventListener("change", function () {
+		filter();
+	});
+
+
+	form.appendChild(starFilterLabel);
+	form.appendChild(document.createElement('br'));
+	form.appendChild(starFilter);
+	form.appendChild(document.createElement('br'));
+	form.appendChild(genreFilterLabel);
+	form.appendChild(document.createElement('br'));
+	form.appendChild(genreFilter);
+	form.appendChild(document.createElement('br'));
+	form.appendChild(crownFilterLabel);
+	form.appendChild(document.createElement('br'));
+	form.appendChild(crownFilter);
+
+	scoreTable.prepend(form)
+}
 
 function filter() {
 	// TODO : find a better way to get the score table
 	let rows = scoreTable.getElementsByTagName("tr");
 	let selectedStart = getSelectedStar();
 	let selectedGenre = getSelectedGenre();
+	let selectedCrown = getSelectedCrown();
 
 	// the first 2 rows are header info
 	for (i = startingIndex; i < rows.length; i++) {
@@ -108,6 +141,12 @@ function filter() {
 			}
 		}
 
+		if(selectedCrown != 0){
+			if(crown.charAt(0) != selectedCrown){
+				shouldHide = true;
+			}
+		}
+
 		if (shouldHide) {
 			rows[i].style.display = "none";
 		} else {
@@ -129,6 +168,11 @@ function getSelectedStar() {
 function getSelectedGenre() {
 	let genreFilter = document.getElementById("genreFilter");
 	return genreFilter.value;
+}
+
+function getSelectedCrown() {
+	let crownFilter = document.getElementById("crownFilter");
+	return crownFilter.value;
 }
 
 function sort(index) {

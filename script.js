@@ -34,14 +34,14 @@ let genreFilterLabel = document.createElement('label');
 genreFilterLabel.innerText = 'Genre : ';
 let genreFilter = document.createElement('select');
 genreFilter.setAttribute('id', "genreFilter");
-const genres = ['any', 'namco', 'jpop', 'game', 'classic', 'kids', 'vocaloid', 'anime', 'green'];
-const genresJPText = ['魑魅魍魎', 'ナ', 'ポ', 'ゲ', 'ク', 'キ', 'ボ', 'ア', 'バ'];
-for (let i = 0; i <= genres.length; i++) {
+
+const genres = new Map([['any', 0], ['namco', 'ナ'], ['jpop', 'ポ'], ['game', 'ゲ'], ['classic', 'ク'], ['kids', 'キ'], ['vocaloid', 'ボ'], ['anime', 'ア'], ['green', 'バ']]);
+for (let [key, value] of genres) {
 	let option = document.createElement('option');
-	option.value = i;
-	option.text = genres[i];
+	option.value = value;
+	option.text = key;
 	genreFilter.appendChild(option);
-};
+}
 
 // add listener to the select element
 genreFilter.addEventListener("change", function () {
@@ -67,7 +67,6 @@ for (let i = 0; i < headerRow.length; i++) {
 }
 
 scoreTable.prepend(form)
-
 
 function filter() {
 	// TODO : find a better way to get the score table
@@ -104,7 +103,7 @@ function filter() {
 		}
 
 		if (selectedGenre != 0) {
-			if (convertGenreTextToGenreNumber(genreAndPos) != selectedGenre) {
+			if (genreAndPos.charAt(0) != selectedGenre) {
 				shouldHide = true;
 			}
 		}
@@ -130,11 +129,6 @@ function getSelectedStar() {
 function getSelectedGenre() {
 	let genreFilter = document.getElementById("genreFilter");
 	return genreFilter.value;
-}
-
-function convertGenreTextToGenreNumber(originalText) {
-	const text = originalText.charAt(0);
-	return genresJPText.indexOf(text);
 }
 
 function sort(index) {

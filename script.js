@@ -8,6 +8,7 @@
 const noOfStars = 10;
 const genres = new Map([['Any', 0], ['namco', 'ナ'], ['jpop', 'ポ'], ['game', 'ゲ'], ['classic', 'ク'], ['kids', 'キ'], ['vocaloid', 'ボ'], ['anime', 'ア'], ['green', 'バ']]);
 const crowns = new Map([['Any', 0], ['Rainbow', '虹'], ['Gold', '金'], ['Silver', '銀'], ['None', '無']]);
+const difficulties = new Map([['Any', 0], ['Oni ura', '裏'], ['Oni', '鬼'], ['Hard', '難'], ['Normal', '普'], ['Easy', '簡']]);
 
 let scoreTable = getTheScoreTable();
 let startingIndex = getStartingIndex();
@@ -84,6 +85,21 @@ function createTheFilterForm() {
 		filter();
 	});
 
+	let difficultyFilterLabel = document.createElement('label');
+	difficultyFilterLabel.innerText = 'Difficulty : ';
+	let difficultyFilter = document.createElement('select');
+	difficultyFilter.setAttribute("id", "difficultyFilter");
+
+	for (let [key, value] of difficulties) {
+		let option = document.createElement('option');
+		option.value = value;
+		option.text = key;
+		difficultyFilter.appendChild(option);
+	}
+
+	difficultyFilter.addEventListener("change", function () {
+		filter();
+	});
 
 	form.appendChild(starFilterLabel);
 	form.appendChild(document.createElement('br'));
@@ -96,6 +112,10 @@ function createTheFilterForm() {
 	form.appendChild(crownFilterLabel);
 	form.appendChild(document.createElement('br'));
 	form.appendChild(crownFilter);
+	form.appendChild(document.createElement('br'));
+	form.appendChild(difficultyFilterLabel);
+	form.appendChild(document.createElement('br'));
+	form.appendChild(difficultyFilter);
 
 	scoreTable.prepend(form)
 }
@@ -106,6 +126,7 @@ function filter() {
 	let selectedStart = getSelectedStar();
 	let selectedGenre = getSelectedGenre();
 	let selectedCrown = getSelectedCrown();
+	let selectedDifficulty = getSelectedDifficulty();
 
 	// the first 2 rows are header info
 	for (i = startingIndex; i < rows.length; i++) {
@@ -141,8 +162,14 @@ function filter() {
 			}
 		}
 
-		if(selectedCrown != 0){
-			if(crown.charAt(0) != selectedCrown){
+		if (selectedCrown != 0) {
+			if (crown.charAt(0) != selectedCrown) {
+				shouldHide = true;
+			}
+		}
+
+		if (selectedDifficulty != 0) {
+			if (difficulty.charAt(0) != selectedDifficulty) {
 				shouldHide = true;
 			}
 		}
@@ -173,6 +200,11 @@ function getSelectedGenre() {
 function getSelectedCrown() {
 	let crownFilter = document.getElementById("crownFilter");
 	return crownFilter.value;
+}
+
+function getSelectedDifficulty() {
+	let difficultyFilter = document.getElementById("difficultyFilter");
+	return difficultyFilter.value;
 }
 
 function sort(index) {

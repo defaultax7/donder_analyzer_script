@@ -32,6 +32,14 @@ form.appendChild(starFilterLabel);
 form.appendChild(starFilter);
 
 let scoreTable = document.getElementsByTagName("table")[5];
+let startingIndex = getStartingIndex();
+
+let headerRow = scoreTable.getElementsByTagName('tr')[startingIndex - 1].getElementsByTagName('td');
+for (let i = 0; i < headerRow.length; i++) {
+	headerRow[i].addEventListener('click', function () {
+		sort(i);
+	})
+}
 
 scoreTable.prepend(form)
 
@@ -40,8 +48,7 @@ function filter() {
 	// TODO : find a better way to get the score table
 	let rows = scoreTable.getElementsByTagName("tr");
 	let selectedStart = getSelectedStar();
-	let startingIndex = getStartingIndex();
-	console.log(startingIndex);
+
 	// the first 2 rows are header info
 	for (i = startingIndex; i < rows.length; i++) {
 		// extract every columns for readbility
@@ -81,4 +88,43 @@ function getStartingIndex() {
 function getSelectedStar() {
 	let starFilter = document.getElementById("starFilter");
 	return starFilter.value;
+}
+
+function sort(index) {
+	let tableBody = scoreTable.getElementsByTagName('tbody')[0];
+	let rows = tableBody.getElementsByTagName('tr');
+
+	let newRows = Array.from(rows);
+
+	// no need to sort the header
+	newRows.splice(0, startingIndex);
+
+	newRows.sort(function (rowA, rowB) {
+		let valueA = rowA.getElementsByTagName('td')[index].innerText;
+		let valueB = rowB.getElementsByTagName('td')[index].innerText;
+
+		if (!isNaN(valueA)) {
+			valueA = parseInt(valueA);
+			valueB = parseInt(valueB);
+		}
+		if (valueA < valueB) {
+			return 1;
+		}
+		else if (valueA > valueB) {
+			return -1;
+		} else {
+			return 0;
+		}
+	});
+
+	const rowLength = rows.length;
+
+	for (let i = startingIndex; i < rowLength; i++) {
+		tableBody.removeChild(rows[startingIndex]);
+	}
+
+	for (let i = 0; i < newRows.length; i++) {
+		tableBody.appendChild(newRows[i]);
+	}
+
 }

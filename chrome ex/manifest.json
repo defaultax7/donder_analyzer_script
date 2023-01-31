@@ -1,0 +1,15 @@
+{
+  "name": "Donder Analyzer Addon",
+  "description": "Add filtering & sorting function to the donder analizer web",
+  "version": "1.0",
+  "manifest_version": 3,
+ "icons": {
+    "128": "icon.png"
+  },
+  "content_scripts" : [
+  {
+	  "matches" : ["https://ibubara.mydns.jp/don-anal/don-anal.cgi?*"],
+	  "js" : ["content.js"]
+  }
+  ]
+}
